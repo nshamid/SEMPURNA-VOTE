@@ -16,9 +16,6 @@ st.write(st.secrets.keys())
 
 VOTERS_PATH = "data/voters.csv"
 
-ADMIN_PASSWORD = "adminbps123"      # GANTI
-RESULT_PASSWORD = "hasilbps25"     # GANTI
-
 kandidat = [
     {"nama": "Syifa", "foto": "images/Kandidat1.jpg"},
     {"nama": "Yuwa", "foto": "images/Kandidat2.jpg"},
@@ -68,8 +65,11 @@ with col_title:
 st.divider()
 
 # ================= GOOGLE SHEETS =================
+SHEET_ID = st.secrets["app_config"]["SHEET_ID"]
+RESULT_PASSWORD = st.secrets["app_config"]["RESULT_PASSWORD"]
+
 scope = [
-    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
@@ -79,7 +79,7 @@ creds = Credentials.from_service_account_info(
 )
 
 client = gspread.authorize(creds)
-sheet = client.open_by_key(st.secrets["SHEET_ID"]).sheet1
+sheet = client.open_by_key(SHEET_ID).sheet1
 
 # ================= LOAD DATA =================
 @st.cache_data
