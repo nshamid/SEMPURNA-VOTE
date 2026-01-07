@@ -170,7 +170,7 @@ if menu == "🗳️ Voting":
                 ])
                 st.success("✅ Voting berhasil disimpan")
                 st.balloons()
-                st.experimental_rerun()
+                st.rerun()
 
 # ================= HASIL & RANKING =================
 elif menu == "🏆 Hasil & Ranking":
@@ -181,7 +181,7 @@ elif menu == "🏆 Hasil & Ranking":
         if pwd:
             if pwd == RESULT_PASSWORD:
                 st.session_state.hasil_auth = True
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Password salah")
     else:
