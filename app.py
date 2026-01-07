@@ -61,7 +61,7 @@ if menu == "🗳️ Voting":
 
     identity = st.text_input(
         "Masukkan NIP",
-        placeholder="contoh: 1981082420xxxxxx"
+        placeholder="contoh: 1981082420xxxxxxxx"
     )
 
     if identity:
