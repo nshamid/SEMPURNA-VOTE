@@ -13,6 +13,9 @@ st.set_page_config(
 
 DATA_PATH = "data/votes.csv"
 
+ADMIN_PASSWORD = "admin123"      # GANTI
+RESULT_PASSWORD = "hasil123"     # GANTI
+
 kandidat = [
     {"nama": "Syifa", "foto": "images/kandidat1.jpeg"},
     {"nama": "Yuwa", "foto": "images/kandidat2.jpg"},
@@ -28,37 +31,39 @@ kandidat = [
 if not os.path.exists("data"):
     os.makedirs("data")
 
-if not os.path.exists(DATA_PATH):
-    pd.DataFrame(columns=["voter_id", "kandidat"]).to_csv(DATA_PATH, index=False)
+try:
+    df = pd.read_csv(DATA_PATH)
+except:
+    df = pd.DataFrame(columns=["voter_id", "kandidat"])
+    df.to_csv(DATA_PATH, index=False)
 
-df = pd.read_csv(DATA_PATH)
+if "voter_id" not in df.columns or "kandidat" not in df.columns:
+    df = pd.DataFrame(columns=["voter_id", "kandidat"])
+    df.to_csv(DATA_PATH, index=False)
 
 # ================= FUNCTION =================
 def hash_identity(text):
     return hashlib.sha256(text.encode()).hexdigest()
 
+# ================= SESSION STATE =================
+if "hasil_auth" not in st.session_state:
+    st.session_state.hasil_auth = False
+
+if "admin_auth" not in st.session_state:
+    st.session_state.admin_auth = False
+
 # ================= SIDEBAR =================
-st.sidebar.title("📌 Navigasi")
+st.sidebar.title("📌 Menu")
 menu = st.sidebar.radio(
     "",
-    ["🗳️ Voting", "🏆 Hasil & Ranking"]
+    ["🗳️ Voting", "🏆 Hasil & Ranking", "🔐 Admin"]
 )
 
-# ================== HALAMAN VOTING ==================
+# ================== VOTING PAGE ==================
 if menu == "🗳️ Voting":
     st.title("🗳️ E-Voting Online")
 
-    st.markdown("""
-    <div style="background-color:#1f2937;padding:15px;border-radius:10px">
-    <h4 style="color:white">📢 Ketentuan Voting</h4>
-    <ul style="color:#d1d5db">
-        <li>Setiap orang hanya boleh voting <b>1 kali</b></li>
-        <li>Identitas disimpan secara aman (hash)</li>
-    </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.write("")
+    st.info("Setiap orang hanya diperbolehkan **1 kali voting**")
 
     identity = st.text_input(
         "Masukkan NIP",
@@ -93,73 +98,95 @@ if menu == "🗳️ Voting":
                 st.success(f"✅ Voting berhasil untuk **{selected}**")
                 st.balloons()
 
-# ================== HALAMAN HASIL & RANKING ==================
-else:
-    st.title("🏆 Hasil Voting & Ranking")
+# ================== HASIL & RANKING (PASSWORD) ==================
+elif menu == "🏆 Hasil & Ranking":
+    st.title("🔒 Halaman Hasil Voting")
 
-    if df.empty:
-        st.warning("Belum ada suara masuk.")
+    if not st.session_state.hasil_auth:
+        password = st.text_input(
+            "Masukkan Password untuk Melihat Hasil",
+            type="password"
+        )
+
+        if password:
+            if password == RESULT_PASSWORD:
+                st.session_state.hasil_auth = True
+                st.success("Akses diberikan")
+                st.experimental_rerun()
+            else:
+                st.error("Password salah")
     else:
-        total_votes = len(df)
+        st.subheader("🏆 Hasil Voting & Ranking")
 
-        hasil = (
-            df["kandidat"]
-            .value_counts()
-            .reset_index()
-        )
-        hasil.columns = ["Kandidat", "Jumlah"]
+        if df.empty:
+            st.warning("Belum ada suara masuk.")
+        else:
+            total_votes = len(df)
 
-        hasil["Persentase (%)"] = round(
-            (hasil["Jumlah"] / total_votes) * 100, 2
-        )
+            hasil = df["kandidat"].value_counts().reset_index()
+            hasil.columns = ["Kandidat", "Jumlah"]
 
-        hasil = hasil.sort_values(
-            by="Jumlah",
-            ascending=False
-        ).reset_index(drop=True)
-
-        hasil["Ranking"] = hasil.index + 1
-
-        # ================== RANKING CARD ==================
-        st.subheader("🏅 Ranking Kandidat")
-
-        for _, row in hasil.iterrows():
-            medal = "🥇" if row["Ranking"] == 1 else "🥈" if row["Ranking"] == 2 else "🥉" if row["Ranking"] == 3 else "🎯"
-
-            st.markdown(
-                f"""
-                **{medal} Peringkat {row['Ranking']} – {row['Kandidat']}**  
-                {row['Jumlah']} suara ({row['Persentase (%)']}%)
-                """
+            hasil["Persentase (%)"] = round(
+                hasil["Jumlah"] / total_votes * 100, 2
             )
-            st.progress(row["Persentase (%)"] / 100)
 
-        st.divider()
+            hasil = hasil.sort_values("Jumlah", ascending=False).reset_index(drop=True)
+            hasil["Ranking"] = hasil.index + 1
 
-        # ================== BAR CHART ==================
-        fig = px.bar(
-            hasil,
-            x="Kandidat",
-            y="Jumlah",
-            color="Kandidat",
-            text="Persentase (%)",
-            title="Distribusi Suara Kandidat",
+            for _, row in hasil.iterrows():
+                medal = (
+                    "🥇" if row["Ranking"] == 1 else
+                    "🥈" if row["Ranking"] == 2 else
+                    "🥉" if row["Ranking"] == 3 else
+                    "🎯"
+                )
+
+                st.markdown(
+                    f"**{medal} Peringkat {row['Ranking']} – {row['Kandidat']}**  \n"
+                    f"{row['Jumlah']} suara ({row['Persentase (%)']}%)"
+                )
+                st.progress(row["Persentase (%)"] / 100)
+
+            fig = px.bar(
+                hasil,
+                x="Kandidat",
+                y="Jumlah",
+                color="Kandidat",
+                text="Persentase (%)",
+                title="Distribusi Suara Kandidat"
+            )
+
+            fig.update_layout(template="plotly_dark")
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.dataframe(
+                hasil[["Ranking", "Kandidat", "Jumlah", "Persentase (%)"]],
+                use_container_width=True
+            )
+
+# ================== ADMIN PAGE ==================
+elif menu == "🔐 Admin":
+    st.title("🔐 Admin Panel")
+
+    if not st.session_state.admin_auth:
+        password = st.text_input(
+            "Masukkan Password Admin",
+            type="password"
         )
 
-        fig.update_layout(
-            template="plotly_dark",
-            xaxis_title="Kandidat",
-            yaxis_title="Jumlah Suara"
-        )
+        if password:
+            if password == ADMIN_PASSWORD:
+                st.session_state.admin_auth = True
+                st.success("Login admin berhasil")
+                st.experimental_rerun()
+            else:
+                st.error("Password salah")
+    else:
+        st.warning("⚠️ Aksi di bawah ini akan menghapus SELURUH data voting")
 
-        st.plotly_chart(fig, use_container_width=True)
+        if st.button("🗑️ Reset Semua Data Voting", use_container_width=True):
+            df = pd.DataFrame(columns=["voter_id", "kandidat"])
+            df.to_csv(DATA_PATH, index=False)
 
-        st.divider()
-
-        # ================== TABLE ==================
-        st.subheader("📋 Tabel Rekapitulasi")
-
-        st.dataframe(
-            hasil[["Ranking", "Kandidat", "Jumlah", "Persentase (%)"]],
-            use_container_width=True
-        )
+            st.success("✅ Data voting berhasil dibersihkan")
+            st.experimental_rerun()
