@@ -14,13 +14,14 @@ st.set_page_config(
 DATA_PATH = "data/votes.csv"
 
 kandidat = [
-    {"nama": "Kandidat 1", "foto": "images/kandidat1.jpeg"},
-    {"nama": "Kandidat 2", "foto": "images/kandidat2.jpeg"},
-    {"nama": "Kandidat 3", "foto": "images/kandidat3.jpg"},
-    {"nama": "Kandidat 4", "foto": "images/kandidat4.jpg"},
-    {"nama": "Kandidat 5", "foto": "images/kandidat5.jpg"},
-    {"nama": "Kandidat 6", "foto": "images/kandidat6.jpg"},
-    {"nama": "Kandidat 7", "foto": "images/kandidat7.jpg"},
+    {"nama": "Syifa", "foto": "images/kandidat1.jpeg"},
+    {"nama": "Yuwa", "foto": "images/kandidat2.jpeg"},
+    {"nama": "IST (Y'Era)", "foto": "images/kandidat3.jpg"},
+    {"nama": "Evi", "foto": "images/kandidat4.jpg"},
+    {"nama": "Fivi", "foto": "images/kandidat5.jpg"},
+    {"nama": "Atika", "foto": "images/kandidat6.jpg"},
+    {"nama": "Abe", "foto": "images/kandidat7.jpg"},
+    {"nama": "Yogi", "foto": "images/kandidat8.jpg"},
 ]
 
 # ================= INIT DATA =================
