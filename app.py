@@ -27,27 +27,33 @@ kandidat = [
 # ================= THEME =================
 st.markdown("""
 <style>
-.stApp {
-    background-color: #FFE0BF; /* sedikit lebih oren */
+.stApp { background-color: #FFF4E6; }
+h1, h2, h3, h4 { color: #F15A24; }
+
+.rank-box {
+    background-color: #F7941D;
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
-h1, h2, h3, h4 {
-    color: #F15A24;
+.rank-box h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
 }
 
-/* BUTTON VOTING */
-div.stButton > button {
-    background-color: #F7941D !important;
-    color: white !important;
-    width: 100%;
-    font-weight: bold;
+.rank-box h3 {
+    margin: 0;
+}
+
+.rank-item {
+    background-color: white;
+    padding: 15px;
     border-radius: 10px;
-    height: 45px;
-    border: none;
-}
-
-div.stButton > button:hover {
-    background-color: #E67E00 !important;
+    margin-bottom: 10px;
+    border-left: 6px solid #F7941D;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -164,63 +170,50 @@ elif menu == "🏆 Hasil & Ranking":
             else:
                 st.error("Password salah")
     else:
+        votes_df = load_votes()
+
         if votes_df.empty:
             st.warning("Belum ada suara.")
-            
         else:
-                total = len(votes_df)
-                hasil = votes_df["kandidat"].value_counts().reset_index()
-                hasil.columns = ["Kandidat", "Jumlah"]
-                hasil["Persentase (%)"] = round(hasil["Jumlah"] / total * 100, 2)
-                hasil = hasil.sort_values("Jumlah", ascending=False).reset_index(drop=True)
-                hasil["Ranking"] = hasil.index + 1
-        
-                # ================= JUARA 1 =================
-                juara = hasil.iloc[0]
-                foto_juara = next(
-                    k["foto"] for k in kandidat if k["nama"] == juara["Kandidat"]
-                )
-        
-                st.markdown("## 🏆 Juara Pertama")
-        
-                col1, col2 = st.columns([1, 2])
-        
-                with col1:
-                    st.image(foto_juara, use_container_width=True)
-        
-                with col2:
-                    if st.button("🎉 KLIK UNTUK RAYAKAN", use_container_width=True):
-                        st.balloons()
-        
-                    st.markdown(f"""
-                    <div style="
-                        background: linear-gradient(135deg, #F7941D, #F15A24);
-                        padding: 25px;
-                        border-radius: 20px;
-                        color: white;
-                    ">
-                        <h2>{juara['Kandidat']}</h2>
-                        <p><b>{juara['Jumlah']} suara</b> ({juara['Persentase (%)']}%)</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-        
-                st.divider()
-        
-                # ================= RANKING LAIN =================
-                st.markdown("## 📊 Ranking Lengkap")
-        
-                for _, r in hasil.iterrows():
-                    st.markdown(
-                        f"**🏅 {r['Ranking']} – {r['Kandidat']}**  \n"
-                        f"{r['Jumlah']} suara ({r['Persentase (%)']}%)"
-                    )
-                    st.progress(r["Persentase (%)"] / 100)
-        
-                fig = px.bar(
-                    hasil,
-                    x="Kandidat",
-                    y="Jumlah",
-                    text="Persentase (%)"
-                )
-                fig.update_layout(template="plotly_white")
-                st.plotly_chart(fig, use_container_width=True)
+            total = len(votes_df)
+
+            hasil = votes_df["kandidat"].value_counts().reset_index()
+            hasil.columns = ["Kandidat", "Jumlah"]
+            hasil["Persentase"] = round(hasil["Jumlah"] / total * 100, 2)
+            hasil = hasil.sort_values("Jumlah", ascending=False).reset_index(drop=True)
+            hasil["Ranking"] = hasil.index + 1
+
+            # ================= RANK 1 BOX =================
+            juara = hasil.iloc[0]
+            st.markdown(f"""
+            <div class="rank-box">
+                <h3>🏆 PERINGKAT 1</h3>
+                <h1>{juara['Kandidat']}</h1>
+                <p>{juara['Jumlah']} suara ({juara['Persentase']}%)</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("### 📊 Ranking Lengkap")
+
+            for _, r in hasil.iloc[1:].iterrows():
+                st.markdown(f"""
+                <div class="rank-item">
+                    <b>🏅 {r['Ranking']} – {r['Kandidat']}</b><br>
+                    {r['Jumlah']} suara ({r['Persentase']}%)
+                </div>
+                """, unsafe_allow_html=True)
+
+            # ================= SINGLE BAR CHART =================
+            fig = px.bar(
+                hasil,
+                x="Kandidat",
+                y="Jumlah",
+                color="Kandidat",
+                text="Persentase",
+                title="📊 Distribusi Suara Seluruh Kandidat"
+            )
+            fig.update_layout(
+                showlegend=False,
+                template="plotly_white"
+            )
+            st.plotly_chart(fig, use_container_width=True)
