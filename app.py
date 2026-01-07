@@ -17,13 +17,13 @@ ADMIN_PASSWORD = "adminbps123"      # GANTI
 RESULT_PASSWORD = "hasilbps123"     # GANTI
 
 kandidat = [
-    {"nama": "Syifa", "foto": "images/Kandidat1.jpeg"},
-    {"nama": "Yuwa", "foto": "images/Kandidat2.jpeg"},
-    {"nama": "IST (Y'Era)", "foto": "images/Kandidat3.jpeg"},
-    {"nama": "Fivi", "foto": "images/Kandidat4.jpeg"},
-    {"nama": "Atika", "foto": "images/Kandidat5.jpeg"},
-    {"nama": "Abe", "foto": "images/Kandidat6.jpeg"},
-    {"nama": "Yogi", "foto": "images/Kandidat7.jpeg"},
+    {"nama": "Syifa", "foto": "images/Kandidat1.jpg"},
+    {"nama": "Yuwa", "foto": "images/Kandidat2.jpg"},
+    {"nama": "IST (Y'Era)", "foto": "images/Kandidat3.jpg"},
+    {"nama": "Fivi", "foto": "images/Kandidat4.jpg"},
+    {"nama": "Atika", "foto": "images/Kandidat5.jpg"},
+    {"nama": "Abe", "foto": "images/Kandidat6.jpg"},
+    {"nama": "Yogi", "foto": "images/Kandidat7.jpg"},
 ]
 
 # ================= INIT DATA =================
