@@ -60,8 +60,8 @@ if menu == "🗳️ Voting":
     st.write("")
 
     identity = st.text_input(
-        "Masukkan NIM / Email",
-        placeholder="contoh: 090212822xxx"
+        "Masukkan NIP",
+        placeholder="contoh: 1981082420xxxxxx"
     )
 
     if identity:
