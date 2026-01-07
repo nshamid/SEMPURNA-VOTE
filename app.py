@@ -13,18 +13,17 @@ st.set_page_config(
 
 DATA_PATH = "data/votes.csv"
 
-ADMIN_PASSWORD = "admin123"      # GANTI
-RESULT_PASSWORD = "hasil123"     # GANTI
+ADMIN_PASSWORD = "adminbps123"      # GANTI
+RESULT_PASSWORD = "hasilbps123"     # GANTI
 
 kandidat = [
     {"nama": "Syifa", "foto": "images/kandidat1.jpeg"},
-    {"nama": "Yuwa", "foto": "images/kandidat2.jpg"},
-    {"nama": "IST (Y'Era)", "foto": "images/kandidat3.jpg"},
-    {"nama": "Evi", "foto": "images/kandidat4.jpg"},
-    {"nama": "Fivi", "foto": "images/kandidat5.jpg"},
-    {"nama": "Atika", "foto": "images/kandidat6.jpg"},
-    {"nama": "Abe", "foto": "images/kandidat7.jpg"},
-    {"nama": "Yogi", "foto": "images/kandidat8.jpg"},
+    {"nama": "Yuwa", "foto": "images/kandidat2.jpeg"},
+    {"nama": "IST (Y'Era)", "foto": "images/kandidat3.jpeg"},
+    {"nama": "Fivi", "foto": "images/kandidat4.jpeg"},
+    {"nama": "Atika", "foto": "images/kandidat5.jpeg"},
+    {"nama": "Abe", "foto": "images/kandidat6.jpeg"},
+    {"nama": "Yogi", "foto": "images/kandidat7.jpeg"},
 ]
 
 # ================= INIT DATA =================
