@@ -155,7 +155,8 @@ if menu == "🗳️ Voting":
             for i, k in enumerate(kandidat):
                 with cols[i % 3]:
                     st.image(k["foto"], use_container_width=True)
-                    if st.button( 
+                    if st.button(
+                        f"Vote {k['nama']}",
                         key=f"Vote_{k['nama']}", 
                         use_container_width=True 
                     ): 
