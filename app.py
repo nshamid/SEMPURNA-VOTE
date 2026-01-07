@@ -1,17 +1,17 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import hashlib
 import os
 
 # ================= CONFIG =================
 st.set_page_config(
-    page_title="E-Voting",
+    page_title="E-Voting BPS Kota Palembang",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-DATA_PATH = "data/votes.csv"
+VOTERS_PATH = "data/voters.csv"
+VOTES_PATH = "data/votes.csv"
 
 ADMIN_PASSWORD = "adminbps123"      # GANTI
 RESULT_PASSWORD = "hasilbps123"     # GANTI
@@ -26,25 +26,69 @@ kandidat = [
     {"nama": "Yogi", "foto": "images/Kandidat7.jpg"},
 ]
 
-# ================= INIT DATA =================
+# ================= THEME (BPS ORANGE) =================
+st.markdown("""
+<style>
+.stApp {
+    background-color: #FFF4E6;
+}
+
+h1, h2, h3, h4 {
+    color: #F15A24;
+}
+
+div.stButton > button {
+    background-color: #F7941D;
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+div.stButton > button:hover {
+    background-color: #F15A24;
+    color: white;
+}
+
+.sidebar .sidebar-content {
+    background-color: #F7941D;
+}
+
+.stProgress > div > div {
+    background-color: #F15A24;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ================= HEADER (BANNER + LOGO) =================
+st.image("images/banner.jpg", use_container_width=True)
+
+col_logo, col_title = st.columns([1, 6])
+with col_logo:
+    st.image("images/logo_bps.png", width=90)
+with col_title:
+    st.markdown("""
+    <h2>Badan Pusat Statistik Kota Palembang</h2>
+    <p><b>E-Voting SEMPURNA</b></p>
+    """, unsafe_allow_html=True)
+
+st.divider()
+
+# ================= INIT FILE =================
 if not os.path.exists("data"):
     os.makedirs("data")
 
-try:
-    df = pd.read_csv(DATA_PATH)
-except:
-    df = pd.DataFrame(columns=["voter_id", "kandidat"])
-    df.to_csv(DATA_PATH, index=False)
+if not os.path.exists(VOTERS_PATH):
+    st.error("❌ File data/voters.csv tidak ditemukan!")
+    st.stop()
 
-if "voter_id" not in df.columns or "kandidat" not in df.columns:
-    df = pd.DataFrame(columns=["voter_id", "kandidat"])
-    df.to_csv(DATA_PATH, index=False)
+voters_df = pd.read_csv(VOTERS_PATH)
 
-# ================= FUNCTION =================
-def hash_identity(text):
-    return hashlib.sha256(text.encode()).hexdigest()
+if not os.path.exists(VOTES_PATH):
+    pd.DataFrame(columns=["nip", "kandidat"]).to_csv(VOTES_PATH, index=False)
 
-# ================= SESSION STATE =================
+votes_df = pd.read_csv(VOTES_PATH)
+
+# ================= SESSION =================
 if "hasil_auth" not in st.session_state:
     st.session_state.hasil_auth = False
 
@@ -58,134 +102,92 @@ menu = st.sidebar.radio(
     ["🗳️ Voting", "🏆 Hasil & Ranking", "🔐 Admin"]
 )
 
-# ================== VOTING PAGE ==================
+# ================= VOTING PAGE =================
 if menu == "🗳️ Voting":
-    st.title("🗳️ E-Voting SEMPURNA")
+    st.subheader("🗳️ Form Voting")
 
-    st.info("Setiap orang hanya diperbolehkan **1 kali voting**")
-
-    identity = st.text_input(
-        "Masukkan NIP",
-        placeholder="contoh: 1981082420xxxxxxxx"
+    st.info(
+    "📢 **Ketentuan Voting:**\n\n"
+    "- Setiap pegawai **hanya diperbolehkan melakukan voting sebanyak 1 kali**.\n"
+    "- Voting menggunakan **NIP terdaftar**.\n"
+    "- Setelah vote dikirim, **tidak dapat diubah**.\n"
+    "- Pastikan pilihan Anda sudah benar sebelum menekan tombol pilih."
     )
 
-    if identity:
-        voter_id = hash_identity(identity)
+    nip_input = st.text_input("Masukkan NIP Terdaftar")
 
-        if voter_id in df["voter_id"].values:
-            st.error("❌ Anda sudah melakukan voting.")
+    if nip_input:
+        if nip_input not in voters_df["nip"].astype(str).values:
+            st.error("❌ NIP tidak terdaftar.")
+        elif nip_input in votes_df["nip"].astype(str).values:
+            st.warning("⚠️ NIP ini sudah melakukan voting.")
         else:
-            st.subheader("Pilih Kandidat")
+            nama = voters_df[voters_df["nip"].astype(str) == nip_input]["nama"].values[0]
+            st.success(f"Selamat datang **{nama}**")
 
             cols = st.columns(3)
             selected = None
 
             for i, k in enumerate(kandidat):
                 with cols[i % 3]:
-                    st.image(k["foto"], use_column_width=True)
-                    if st.button(f"Vote {k['nama']}", use_container_width=True):
+                    st.image(k["foto"], use_container_width=True)
+                    if st.button(f"Pilih {k['nama']}", use_container_width=True):
                         selected = k["nama"]
 
             if selected:
-                new_vote = pd.DataFrame(
-                    [[voter_id, selected]],
-                    columns=["voter_id", "kandidat"]
-                )
-                df = pd.concat([df, new_vote], ignore_index=True)
-                df.to_csv(DATA_PATH, index=False)
+                new_vote = pd.DataFrame([[nip_input, selected]], columns=["nip", "kandidat"])
+                votes_df = pd.concat([votes_df, new_vote], ignore_index=True)
+                votes_df.to_csv(VOTES_PATH, index=False)
 
-                st.success(f"✅ Voting berhasil untuk **{selected}**")
+                st.success("✅ Voting berhasil disimpan")
                 st.balloons()
 
-# ================== HASIL & RANKING (PASSWORD) ==================
+# ================= HASIL =================
 elif menu == "🏆 Hasil & Ranking":
-    st.title("🔒 Halaman Hasil Voting")
+    st.subheader("🔒 Hasil Voting")
 
     if not st.session_state.hasil_auth:
-        password = st.text_input(
-            "Masukkan Password untuk Melihat Hasil",
-            type="password"
-        )
-
-        if password:
-            if password == RESULT_PASSWORD:
-                st.session_state.hasil_auth = True
-                st.success("Akses diberikan")
-                st.experimental_rerun()
-            else:
-                st.error("Password salah")
+        pwd = st.text_input("Password", type="password")
+        if pwd == RESULT_PASSWORD:
+            st.session_state.hasil_auth = True
+            st.experimental_rerun()
+        elif pwd:
+            st.error("Password salah")
     else:
-        st.subheader("🏆 Hasil Voting & Ranking")
-
-        if df.empty:
-            st.warning("Belum ada suara masuk.")
+        if votes_df.empty:
+            st.warning("Belum ada suara.")
         else:
-            total_votes = len(df)
-
-            hasil = df["kandidat"].value_counts().reset_index()
+            total = len(votes_df)
+            hasil = votes_df["kandidat"].value_counts().reset_index()
             hasil.columns = ["Kandidat", "Jumlah"]
-
-            hasil["Persentase (%)"] = round(
-                hasil["Jumlah"] / total_votes * 100, 2
-            )
-
+            hasil["Persentase (%)"] = round(hasil["Jumlah"] / total * 100, 2)
             hasil = hasil.sort_values("Jumlah", ascending=False).reset_index(drop=True)
             hasil["Ranking"] = hasil.index + 1
 
-            for _, row in hasil.iterrows():
-                medal = (
-                    "🥇" if row["Ranking"] == 1 else
-                    "🥈" if row["Ranking"] == 2 else
-                    "🥉" if row["Ranking"] == 3 else
-                    "🎯"
-                )
-
+            for _, r in hasil.iterrows():
                 st.markdown(
-                    f"**{medal} Peringkat {row['Ranking']} – {row['Kandidat']}**  \n"
-                    f"{row['Jumlah']} suara ({row['Persentase (%)']}%)"
+                    f"**🏅 {r['Ranking']} – {r['Kandidat']}**  \n"
+                    f"{r['Jumlah']} suara ({r['Persentase (%)']}%)"
                 )
-                st.progress(row["Persentase (%)"] / 100)
+                st.progress(r["Persentase (%)"] / 100)
 
             fig = px.bar(
                 hasil,
                 x="Kandidat",
                 y="Jumlah",
                 color="Kandidat",
-                text="Persentase (%)",
-                title="Distribusi Suara Kandidat"
+                text="Persentase (%)"
             )
-
-            fig.update_layout(template="plotly_dark")
+            fig.update_layout(template="plotly_white")
             st.plotly_chart(fig, use_container_width=True)
 
-            st.dataframe(
-                hasil[["Ranking", "Kandidat", "Jumlah", "Persentase (%)"]],
-                use_container_width=True
-            )
+# ================= ADMIN =================
+else:
+    st.subheader("🔐 Admin Panel")
 
-# ================== ADMIN PAGE ==================
-elif menu == "🔐 Admin":
-    st.title("🔐 Admin Panel")
-
-    if not st.session_state.admin_auth:
-        password = st.text_input(
-            "Masukkan Password Admin",
-            type="password"
-        )
-
-        if password:
-            if password == ADMIN_PASSWORD:
-                st.session_state.admin_auth = True
-                st.success("Login admin berhasil")
-                st.experimental_rerun()
-            else:
-                st.error("Password salah")
-    else:
-        st.warning("⚠️ Aksi di bawah ini akan menghapus SELURUH data voting")
-
-        if st.button("🗑️ Reset Semua Data Voting", use_container_width=True):
-            df = pd.DataFrame(columns=["voter_id", "kandidat"])
-            df.to_csv(DATA_PATH, index=False)
-
-            st.success("✅ Data voting berhasil dibersihkan")
+    pwd = st.text_input("Password Admin", type="password")
+    if pwd == ADMIN_PASSWORD:
+        if st.button("🗑️ Reset Semua Voting"):
+            pd.DataFrame(columns=["nip", "kandidat"]).to_csv(VOTES_PATH, index=False)
+            st.success("Data voting berhasil direset")
             st.experimental_rerun()
