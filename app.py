@@ -51,7 +51,7 @@ if menu == "🗳️ Voting":
     <div style="background-color:#1f2937;padding:15px;border-radius:10px">
     <h4 style="color:white">📢 Ketentuan Voting</h4>
     <ul style="color:#d1d5db">
-        <li>Setiap peserta hanya boleh voting <b>1 kali</b></li>
+        <li>Setiap orang hanya boleh voting <b>1 kali</b></li>
         <li>Identitas disimpan secara aman (hash)</li>
     </ul>
     </div>
