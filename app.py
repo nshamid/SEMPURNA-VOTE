@@ -12,8 +12,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.write(st.secrets.keys())
-
 VOTERS_PATH = "data/voters.csv"
 
 kandidat = [
