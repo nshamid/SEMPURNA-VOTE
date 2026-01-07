@@ -61,7 +61,7 @@ menu = st.sidebar.radio(
 
 # ================== VOTING PAGE ==================
 if menu == "🗳️ Voting":
-    st.title("🗳️ E-Voting Online")
+    st.title("🗳️ E-Voting SEMPURNA")
 
     st.info("Setiap orang hanya diperbolehkan **1 kali voting**")
 
