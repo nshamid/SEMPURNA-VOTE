@@ -27,7 +27,7 @@ kandidat = [
 # ================= THEME =================
 st.markdown("""
 <style>
-.stApp { background-color: #FFCFB3; }
+.stApp { background-color: #FFEADE; }
 h1, h2, h3, h4 { color: #F15A24; }
 
 .rank-box {
