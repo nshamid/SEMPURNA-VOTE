@@ -30,6 +30,17 @@ st.markdown("""
 .stApp { background-color: #FFEADE; }
 h1, h2, h3, h4 { color: #F15A24; }
 
+div.stButton > button { 
+    background-color: #F7941D; 
+    color: white; 
+    border-radius: 10px; 
+    font-weight: bold; 
+    } 
+    
+div.stButton > button:hover { 
+    background-color: #F15A24; 
+    }
+    
 .rank-box {
     background-color: #F7941D;
     color: white;
@@ -145,8 +156,7 @@ if menu == "🗳️ Voting":
                 with cols[i % 3]:
                     st.image(k["foto"], use_container_width=True)
                     if st.button( 
-                        f"Pilih {k['nama']}", 
-                        key=f"vote_{k['nama']}", 
+                        key=f"Vote_{k['nama']}", 
                         use_container_width=True 
                     ): 
                         selected = k["nama"]
