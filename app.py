@@ -170,6 +170,7 @@ if menu == "🗳️ Voting":
                 ])
                 st.success("✅ Voting berhasil disimpan")
                 st.balloons()
+                
                 st.rerun()
 
 # ================= HASIL & RANKING =================
