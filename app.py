@@ -27,33 +27,27 @@ kandidat = [
 # ================= THEME =================
 st.markdown("""
 <style>
-.stApp { background-color: #FFF4E6; }
-h1, h2, h3, h4 { color: #F15A24; }
-
-.rank-box {
-    background-color: #F7941D;
-    color: white;
-    padding: 25px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+.stApp {
+    background-color: #FFE0BF; /* sedikit lebih oren */
 }
 
-.rank-box h1 {
-    font-size: 42px;
-    margin-bottom: 10px;
+h1, h2, h3, h4 {
+    color: #F15A24;
 }
 
-.rank-box h3 {
-    margin: 0;
-}
-
-.rank-item {
-    background-color: white;
-    padding: 15px;
+/* BUTTON VOTING */
+div.stButton > button {
+    background-color: #F7941D !important;
+    color: white !important;
+    width: 100%;
+    font-weight: bold;
     border-radius: 10px;
-    margin-bottom: 10px;
-    border-left: 6px solid #F7941D;
+    height: 45px;
+    border: none;
+}
+
+div.stButton > button:hover {
+    background-color: #E67E00 !important;
 }
 </style>
 """, unsafe_allow_html=True)
