@@ -24,26 +24,36 @@ kandidat = [
     {"nama": "Yogi", "foto": "images/Kandidat7.jpg"},
 ]
 
-# ================= THEME (BPS ORANGE) =================
+# ================= THEME =================
 st.markdown("""
 <style>
-.stApp {
-    background-color: #FFF4E6;
-}
-h1, h2, h3, h4 {
-    color: #F15A24;
-}
-div.stButton > button {
+.stApp { background-color: #FFF4E6; }
+h1, h2, h3, h4 { color: #F15A24; }
+
+.rank-box {
     background-color: #F7941D;
     color: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.rank-box h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.rank-box h3 {
+    margin: 0;
+}
+
+.rank-item {
+    background-color: white;
+    padding: 15px;
     border-radius: 10px;
-    font-weight: bold;
-}
-div.stButton > button:hover {
-    background-color: #F15A24;
-}
-.stProgress > div > div {
-    background-color: #F15A24;
+    margin-bottom: 10px;
+    border-left: 6px solid #F7941D;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -85,21 +95,28 @@ def load_voters():
     return pd.read_csv(VOTERS_PATH, dtype=str)
 
 def load_votes():
-    data = sheet.get_all_records()
-    return pd.DataFrame(data)
+    return pd.DataFrame(sheet.get_all_records())
+
+def nip_sudah_vote(nip):
+    try:
+        return nip in sheet.col_values(2)
+    except:
+        return False
 
 voters_df = load_voters()
-votes_df = load_votes()
 
 # ================= SESSION =================
 if "hasil_auth" not in st.session_state:
     st.session_state.hasil_auth = False
 
+if "sudah_vote" not in st.session_state:
+    st.session_state.sudah_vote = False
+
 # ================= SIDEBAR =================
 st.sidebar.title("📌 Menu")
 menu = st.sidebar.radio("", ["🗳️ Voting", "🏆 Hasil & Ranking"])
 
-# ================= VOTING PAGE =================
+# ================= VOTING =================
 if menu == "🗳️ Voting":
     st.subheader("🗳️ Form Voting")
 
@@ -107,8 +124,7 @@ if menu == "🗳️ Voting":
         "📢 **Ketentuan Voting:**\n\n"
         "- Setiap pegawai **hanya diperbolehkan melakukan voting sebanyak 1 kali**.\n"
         "- Voting menggunakan **NIP terdaftar**.\n"
-        "- Setelah vote dikirim, **tidak dapat diubah**.\n"
-        "- Pastikan pilihan Anda sudah benar sebelum menekan tombol pilih."
+        "- Setelah vote dikirim, **tidak dapat diubah**."
     )
 
     nip_input = st.text_input("Masukkan NIP Terdaftar")
@@ -116,15 +132,10 @@ if menu == "🗳️ Voting":
     if nip_input:
         if nip_input not in voters_df["nip"].astype(str).values:
             st.error("❌ NIP tidak terdaftar.")
-
-        elif not votes_df.empty and nip_input in votes_df["nip"].astype(str).values:
+        elif nip_sudah_vote(nip_input):
             st.warning("⚠️ NIP ini sudah melakukan voting.")
-
         else:
-            nama = voters_df.loc[
-                voters_df["nip"].astype(str) == nip_input, "nama"
-            ].values[0]
-
+            nama = voters_df.loc[voters_df["nip"] == nip_input, "nama"].values[0]
             st.success(f"Selamat datang **{nama}**")
 
             cols = st.columns(3)
@@ -133,11 +144,7 @@ if menu == "🗳️ Voting":
             for i, k in enumerate(kandidat):
                 with cols[i % 3]:
                     st.image(k["foto"], use_container_width=True)
-                    if st.button(
-                        f"Pilih {k['nama']}",
-                        key=f"vote_{k['nama']}",
-                        use_container_width=True
-                    ):
+                    if st.button(f"Pilih {k['nama']}", key=k["nama"]):
                         selected = k["nama"]
 
             if selected:
@@ -146,46 +153,67 @@ if menu == "🗳️ Voting":
                     nip_input,
                     selected
                 ])
-
                 st.success("✅ Voting berhasil disimpan")
                 st.balloons()
                 st.experimental_rerun()
 
-# ================= HASIL =================
+# ================= HASIL & RANKING =================
 elif menu == "🏆 Hasil & Ranking":
     st.subheader("🔒 Hasil Voting")
 
     if not st.session_state.hasil_auth:
-        pwd = st.text_input("Password", type="password")
-        if pwd == RESULT_PASSWORD:
-            st.session_state.hasil_auth = True
-            st.experimental_rerun()
-        elif pwd:
-            st.error("Password salah")
+        pwd = st.text_input("Masukkan Password", type="password")
+        if pwd:
+            if pwd == RESULT_PASSWORD:
+                st.session_state.hasil_auth = True
+                st.experimental_rerun()
+            else:
+                st.error("Password salah")
     else:
+        votes_df = load_votes()
+
         if votes_df.empty:
             st.warning("Belum ada suara.")
         else:
             total = len(votes_df)
+
             hasil = votes_df["kandidat"].value_counts().reset_index()
             hasil.columns = ["Kandidat", "Jumlah"]
-            hasil["Persentase (%)"] = round(hasil["Jumlah"] / total * 100, 2)
+            hasil["Persentase"] = round(hasil["Jumlah"] / total * 100, 2)
             hasil = hasil.sort_values("Jumlah", ascending=False).reset_index(drop=True)
             hasil["Ranking"] = hasil.index + 1
 
-            for _, r in hasil.iterrows():
-                st.markdown(
-                    f"**🏅 {r['Ranking']} – {r['Kandidat']}**  \n"
-                    f"{r['Jumlah']} suara ({r['Persentase (%)']}%)"
-                )
-                st.progress(r["Persentase (%)"] / 100)
+            # ================= RANK 1 BOX =================
+            juara = hasil.iloc[0]
+            st.markdown(f"""
+            <div class="rank-box">
+                <h3>🏆 PERINGKAT 1</h3>
+                <h1>{juara['Kandidat']}</h1>
+                <p>{juara['Jumlah']} suara ({juara['Persentase']}%)</p>
+            </div>
+            """, unsafe_allow_html=True)
 
+            st.markdown("### 📊 Ranking Lengkap")
+
+            for _, r in hasil.iloc[1:].iterrows():
+                st.markdown(f"""
+                <div class="rank-item">
+                    <b>🏅 {r['Ranking']} – {r['Kandidat']}</b><br>
+                    {r['Jumlah']} suara ({r['Persentase']}%)
+                </div>
+                """, unsafe_allow_html=True)
+
+            # ================= SINGLE BAR CHART =================
             fig = px.bar(
                 hasil,
                 x="Kandidat",
                 y="Jumlah",
                 color="Kandidat",
-                text="Persentase (%)"
+                text="Persentase",
+                title="📊 Distribusi Suara Seluruh Kandidat"
             )
-            fig.update_layout(template="plotly_white")
+            fig.update_layout(
+                showlegend=False,
+                template="plotly_white"
+            )
             st.plotly_chart(fig, use_container_width=True)
