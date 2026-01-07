@@ -170,7 +170,7 @@ if menu == "🗳️ Voting":
                 ])
                 st.success("✅ Voting berhasil disimpan")
                 st.balloons()
-                
+                time.sleep(3)
                 st.rerun()
 
 # ================= HASIL & RANKING =================
@@ -203,7 +203,7 @@ elif menu == "🏆 Hasil & Ranking":
             juara = hasil.iloc[0]
             st.markdown(f"""
             <div class="rank-box">
-                <h3>🏆 PERINGKAT 1</h3>
+                <h3>🏆 JUARA</h3>
                 <h1>{juara['Kandidat']}</h1>
                 <p>{juara['Jumlah']} suara ({juara['Persentase']}%)</p>
             </div>
