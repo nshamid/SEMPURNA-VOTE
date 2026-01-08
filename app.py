@@ -129,6 +129,16 @@ def load_voters():
         
     return df
 
+@st.cache_data(ttl=10) # TTL 10 detik agar hasil update jika ada vote baru
+def load_votes():
+    try:
+        # Mengambil semua data dari Google Sheets
+        data = sheet.get_all_records()
+        return pd.DataFrame(data)
+    except Exception as e:
+        st.error(f"Gagal mengambil data dari Google Sheets: {e}")
+        return pd.DataFrame()
+
 def tgl_sudah_vote(tanggal_lahir):
     try:
         return tanggal_lahir in sheet.col_values(2)
