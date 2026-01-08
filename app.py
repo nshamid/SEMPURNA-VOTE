@@ -118,7 +118,6 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 @st.cache_data
 def load_voters():
     return pd.read_csv(VOTERS_PATH, dtype=str)
-    st.write("Kolom voters.csv:", voters_df.columns.tolist())
 
 def load_votes():
     return pd.DataFrame(sheet.get_all_records())
@@ -130,6 +129,7 @@ def tgl_sudah_vote(tanggal_lahir):
         return False
 
 voters_df = load_voters()
+st.write("Kolom voters.csv:", voters_df.columns.tolist())
 
 # ================= SESSION =================
 if "hasil_auth" not in st.session_state:
