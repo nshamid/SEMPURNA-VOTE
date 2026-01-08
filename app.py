@@ -38,7 +38,7 @@ h1, h2, h3, h4, p, span, label {
     color: #000000 !important;
 }
 
-/* Khusus untuk label input (Masukkan NIP Terdaftar) */
+/* Khusus untuk label input (Masukkan Tanggal Lahir Terdaftar) */
 .stWidgetLabel p {
     color: #000000 !important;
     font-weight: bold;
@@ -122,9 +122,9 @@ def load_voters():
 def load_votes():
     return pd.DataFrame(sheet.get_all_records())
 
-def nip_sudah_vote(nip):
+def tgl_sudah_vote(tanggal_lahir):
     try:
-        return nip in sheet.col_values(2)
+        return tanggal_lahir in sheet.col_values(2)
     except:
         return False
 
@@ -157,7 +157,7 @@ if menu == "🗳️ Voting":
     if tgl_input:
         if tgl_input not in voters_df["tanggal_lahir"].astype(str).values:
             st.error("❌ Tanggal Lahir yang dimasukkan salah/tidak terdaftar.")
-        elif tgl_sudah_vote(nip_input):
+        elif tgl_sudah_vote(tgl_input):
             st.warning("⚠️ Pegawai yang memiliki Tanggal Lahir ini sudah melakukan voting.")
         else:
             nama = voters_df.loc[voters_df["tanggal_lahir"] == tgl_input, "nama"].values[0]
