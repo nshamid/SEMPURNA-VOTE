@@ -15,9 +15,6 @@ st.set_page_config(
 
 VOTERS_PATH = "data/voters.csv"
 
-voters_df = load_voters()
-st.write("Kolom voters.csv:", voters_df.columns.tolist())
-
 kandidat = [
     {"nama": "Syifa", "foto": "images/Kandidat1.jpg"},
     {"nama": "Yuwa", "foto": "images/Kandidat2.jpg"},
@@ -121,6 +118,7 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 @st.cache_data
 def load_voters():
     return pd.read_csv(VOTERS_PATH, dtype=str)
+    st.write("Kolom voters.csv:", voters_df.columns.tolist())
 
 def load_votes():
     return pd.DataFrame(sheet.get_all_records())
