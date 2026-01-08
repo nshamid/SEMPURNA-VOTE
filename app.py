@@ -117,10 +117,17 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 # ================= LOAD DATA =================
 @st.cache_data
 def load_voters():
-    return pd.read_csv(VOTERS_PATH, dtype=str)
-
-def load_votes():
-    return pd.DataFrame(sheet.get_all_records())
+    # Gunakan utf-8-sig untuk menghindari masalah BOM
+    df = pd.read_csv(VOTERS_PATH, dtype=str, encoding='utf-8-sig')
+    
+    # Pembersihan total nama kolom
+    df.columns = df.columns.str.strip()
+    
+    # Tambahan: hapus spasi di dalam data tanggal_lahir jika ada
+    if 'tanggal_lahir' in df.columns:
+        df['tanggal_lahir'] = df['tanggal_lahir'].str.strip()
+        
+    return df
 
 def tgl_sudah_vote(tanggal_lahir):
     try:
