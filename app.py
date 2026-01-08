@@ -124,7 +124,7 @@ def load_votes():
 
 def tgl_sudah_vote(tanggal_lahir):
     try:
-        return tanggal_lahir in sheet.col_values(2)
+        return tanggal_lahir in sheet.col_values(3)
     except:
         return False
 
