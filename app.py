@@ -209,8 +209,9 @@ elif menu == "🏆 Hasil & Ranking":
     else:
         votes_df = load_votes()
 
-        if votes_df.empty:
-            st.warning("Belum ada suara.")
+        # Cek apakah kolom 'kandidat' ada untuk menghindari error visualisasi
+        if votes_df.empty or "kandidat" not in votes_df.columns:
+            st.warning("Belum ada suara yang masuk.")
         else:
             total = len(votes_df)
 
