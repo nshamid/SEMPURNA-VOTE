@@ -166,7 +166,7 @@ if menu == "🗳️ Voting":
         if tgl_input not in voters_df["tanggal_lahir"].astype(str).values:
             st.error("❌ Tanggal Lahir yang dimasukkan salah/tidak terdaftar.")
         elif tgl_sudah_vote(tgl_input):
-            st.warning("⚠️ Pegawai yang memiliki Tanggal Lahir ini sudah melakukan voting.")
+            st.warning("⚠️ Pegawai dengan Tanggal Lahir ini sudah melakukan voting.")
         else:
             nama = voters_df.loc[voters_df["tanggal_lahir"] == tgl_input, "nama"].values[0]
             st.success(f"Selamat datang **{nama}**")
@@ -192,7 +192,7 @@ if menu == "🗳️ Voting":
                 ])
                 st.success("✅ Voting berhasil disimpan")
                 st.balloons()
-                time.sleep(3)
+                time.sleep(2)
                 st.rerun()
 
 # ================= HASIL & RANKING =================
