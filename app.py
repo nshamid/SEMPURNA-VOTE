@@ -148,19 +148,19 @@ if menu == "🗳️ Voting":
     st.info(
         "📢 **Ketentuan Voting:**\n\n"
         "- Setiap pegawai **hanya diperbolehkan melakukan voting sebanyak 1 kali**.\n"
-        "- Voting menggunakan **NIP terdaftar**.\n"
+        "- Voting menggunakan **Tanggal Lahir (Format: DD-MM-YYYY)**.\n"
         "- Setelah vote dikirim, **tidak dapat diubah**."
     )
 
-    nip_input = st.text_input("Masukkan NIP Terdaftar")
+    tgl_input = st.text_input("Masukkan Tanggal Lahir (Contoh: 01-01-2001)")
 
-    if nip_input:
-        if nip_input not in voters_df["nip"].astype(str).values:
-            st.error("❌ NIP tidak terdaftar.")
-        elif nip_sudah_vote(nip_input):
-            st.warning("⚠️ NIP ini sudah melakukan voting.")
+    if tgl_input:
+        if tgl_input not in voters_df["tanggal_lahir"].astype(str).values:
+            st.error("❌ Tanggal Lahir yang dimasukkan salah/tidak terdaftar.")
+        elif tgl_sudah_vote(nip_input):
+            st.warning("⚠️ Pegawai yang memiliki Tanggal Lahir ini sudah melakukan voting.")
         else:
-            nama = voters_df.loc[voters_df["nip"] == nip_input, "nama"].values[0]
+            nama = voters_df.loc[voters_df["tanggal_lahir"] == tgl_input, "nama"].values[0]
             st.success(f"Selamat datang **{nama}**")
 
             cols = st.columns(3)
@@ -179,7 +179,7 @@ if menu == "🗳️ Voting":
             if selected:
                 sheet.append_row([
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    nip_input,
+                    tgl_input,
                     selected
                 ])
                 st.success("✅ Voting berhasil disimpan")
