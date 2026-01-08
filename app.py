@@ -18,7 +18,7 @@ VOTERS_PATH = "data/voters.csv"
 kandidat = [
     {"nama": "Syifa", "foto": "images/Kandidat1.jpg"},
     {"nama": "Yuwa", "foto": "images/Kandidat2.jpg"},
-    {"nama": "IST (Y'Era)", "foto": "images/Kandidat3.jpg"},
+    {"nama": "Era", "foto": "images/Kandidat3.jpg"},
     {"nama": "Fivi", "foto": "images/Kandidat4.jpg"},
     {"nama": "Atika", "foto": "images/Kandidat5.jpg"},
     {"nama": "Abe", "foto": "images/Kandidat6.jpg"},
