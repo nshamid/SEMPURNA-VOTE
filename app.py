@@ -28,40 +28,52 @@ kandidat = [
 # ================= THEME =================
 st.markdown("""
 <style>
-.stApp { background-color: #FFEADE; }
-h1, h2, h3, h4 { color: #F15A24; }
+/* Mengatur background utama */
+.stApp { 
+    background-color: #FFEADE; 
+}
 
+/* Memaksa semua teks heading dan paragraf menjadi hitam */
+h1, h2, h3, h4, p, span, label {
+    color: #000000 !important;
+}
+
+/* Khusus untuk label input (Masukkan NIP Terdaftar) */
+.stWidgetLabel p {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+/* Tombol tetap dengan warna branding Anda */
 div.stButton > button { 
     background-color: #F7941D; 
-    color: white; 
+    color: white !important; /* Teks di dalam tombol tetap putih */
     border-radius: 10px; 
     font-weight: bold; 
-    } 
-    
+} 
+
 div.stButton > button:hover { 
     background-color: #F15A24; 
-    }
-    
+    color: white !important;
+}
+
+/* Box Juara 1 (Teks di dalam sini tetap putih agar kontras dengan orange) */
+.rank-box h1, .rank-box h3, .rank-box p {
+    color: white !important;
+}
+
 .rank-box {
     background-color: #F7941D;
-    color: white;
     padding: 25px;
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
-.rank-box h1 {
-    font-size: 42px;
-    margin-bottom: 10px;
-}
-
-.rank-box h3 {
-    margin: 0;
-}
-
+/* Item Ranking (Teks hitam) */
 .rank-item {
     background-color: white;
+    color: #000000 !important;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -77,9 +89,10 @@ col_logo, col_title = st.columns([1, 6])
 with col_logo:
     st.image("images/logo_bps.png", width=90)
 with col_title:
+    # Menambahkan style color: black secara inline
     st.markdown("""
-    <h2>Badan Pusat Statistik Kota Palembang</h2>
-    <p><b>E-Voting SEMPURNA</b></p>
+    <h2 style="color: black; margin-bottom: 0;">Badan Pusat Statistik Kota Palembang</h2>
+    <p style="color: black;"><b>E-Voting SEMPURNA</b></p>
     """, unsafe_allow_html=True)
 
 st.divider()
