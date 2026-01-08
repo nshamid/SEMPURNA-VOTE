@@ -136,7 +136,6 @@ def tgl_sudah_vote(tanggal_lahir):
         return False
 
 voters_df = load_voters()
-st.write("Kolom voters.csv:", voters_df.columns.tolist())
 
 # ================= SESSION =================
 if "hasil_auth" not in st.session_state:
