@@ -15,6 +15,9 @@ st.set_page_config(
 
 VOTERS_PATH = "data/voters.csv"
 
+voters_df = load_voters()
+st.write("Kolom voters.csv:", voters_df.columns.tolist())
+
 kandidat = [
     {"nama": "Syifa", "foto": "images/Kandidat1.jpg"},
     {"nama": "Yuwa", "foto": "images/Kandidat2.jpg"},
